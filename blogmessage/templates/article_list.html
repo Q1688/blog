@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static mymarkdown %}
+
+{% block section %}
+<div class="box">
+    <h1 class="is-size-5 has-text-weight-bold">
+        <a> {{ article.title|safe }}</a>
+    </h1>
+    <div class=" is-size-7 has-text-grey-light pt-1 pb-1">
+        <span class="mr-3">作者：{{ article.owner }}</span> <span>发布日期：{{ article.add_date }}</span> <span>浏览量：{{ article.pv }}</span>
+    </div>
+
+    <div class="content">
+        {{ article.content|md|safe }}
+    </div>
+</div>
+
+<div class="box">
+    <div class="level">
+        <div class="level-left">
+            {% if prev_article %}
+            <span>上一篇：</span><a href="{% url 'blogmessage:article_list' prev_article.id %}" class="level-item">{{ prev_article.title }}</a>
+            {% else %}
+            <span class=" has-text-danger-dark is-size-7">第一篇</span>
+            {% endif %}
+        </div>
+        <div class="level-right">
+            {% if next_article %}
+            <span>下一篇：</span><a href="{% url 'blogmessage:article_list' next_article.id %}" class="level-item">{{ next_article.title }}</a>
+            {% else %}
+            <span class=" has-text-danger-dark is-size-7">最后一篇</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="card">
+    <h2>📝留言板</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div style="margin-bottom: 15px;">
+            {{ field.label_tag }}
+            {{ field }}
+        </div>
+        {% endfor %}
+        <button type="submit" style="background:#d45a7a; color:white;border:none;padding:8px 16px;border-radius: 5px">
+            提交留言
+        </button>
+    </form>
+
+    <div style="margin-top: 30px;">
+        <h3>已有留言({{message | length}})</h3>
+        {% for msg in message %}
+        <div style="border-bottom: 1px solid #eee; padding: 12px 0;">
+            <div style="color: #666; font-size: 0.9em; margin-bottom: 5px;">
+                <strong>{{ msg.name }}</strong>
+                ({{ msg.email }})
+                发表于 {{ msg.created|date:"Y-m-d H:i" }}
+            </div>
+            <p style="margin: 0;">{{ msg.content|linebreaksbr }}</p>
+        </div>
+        {% empty %}
+        <p>暂无留言，来做第一个留言的人吧！</p>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% load category %}
+{% load mymarkdown %}
+{% get_commnet as comment_list %}
+{% for msg in comment_list %}
+    <ul>
+        <li style="color: #007bff">{{ msg.name }}({{ msg.email }})于{{ msg.created|date:"Y-m-d H:i" }}发表关于文章《{{ msg.article }}》的留言：</li>
+        <li>{{msg.content|md|safe}}</li>
+    </ul>
+{% endfor %}

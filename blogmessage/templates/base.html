@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+{% load static category %}
+{% load static mymarkdown %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的博客</title>
+    <link rel="stylesheet" href="/static/css/bulma.min.css">
+<!--背景磁铁-->
+    <script src="/static/jquery/jquery.js"></script>
+    <style>
+    /*在 web 浏览器中，如果您在文本上双击，文本会被选取或高亮显示。此属性用于阻止这种行为。*/
+    * {
+        -webkit-touch-callout:none;
+        -webkit-user-select:none;
+        -khtml-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
+    }
+    </style>
+
+</head>
+
+<body>
+<!--磁铁背景-->
+<script>
+! function() {
+    //封装方法，压缩之后减少文件大小
+    function get_attribute(node, attr, default_value) {
+        return node.getAttribute(attr) || default_value;
+    }
+    //封装方法，压缩之后减少文件大小
+    function get_by_tagname(name) {
+        return document.getElementsByTagName(name);
+    }
+    //获取配置参数
+    function get_config_option() {
+        var scripts = get_by_tagname("script"),
+            script_len = scripts.length,
+            script = scripts[script_len - 1]; //当前加载的script
+        return {
+            l: script_len, //长度，用于生成id用
+            z: get_attribute(script, "zIndex", -1), //z-index
+            o: get_attribute(script, "opacity", 0.5), //opacity
+            c: get_attribute(script, "color", "0,0,0"), //color
+            n: get_attribute(script, "count", 99) //count
+        };
+    }
+    //设置canvas的高宽
+    function set_canvas_size() {
+        canvas_width = the_canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+            canvas_height = the_canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    }
+
+    //绘制过程
+    function draw_canvas() {
+        context.clearRect(0, 0, canvas_width, canvas_height);
+        //随机的线条和当前位置联合数组
+        var e, i, d, x_dist, y_dist, dist; //临时节点
+        //遍历处理每一个点
+        random_points.forEach(function(r, idx) {
+            r.x += r.xa,
+                r.y += r.ya, //移动
+                r.xa *= r.x > canvas_width || r.x < 0 ? -1 : 1,
+                r.ya *= r.y > canvas_height || r.y < 0 ? -1 : 1, //碰到边界，反向反弹
+                context.fillRect(r.x - 0.5, r.y - 0.5, 1, 1); //绘制一个宽高为1的点
+            //从下一个点开始
+            for (i = idx + 1; i < all_array.length; i++) {
+                e = all_array[i];
+                // 当前点存在
+                if (null !== e.x && null !== e.y) {
+                    x_dist = r.x - e.x; //x轴距离 l
+                    y_dist = r.y - e.y; //y轴距离 n
+                    dist = x_dist * x_dist + y_dist * y_dist; //总距离, m
+
+                    dist < e.max && (e === current_point && dist >= e.max / 2 && (r.x -= 0.03 * x_dist, r.y -= 0.03 * y_dist), //靠近的时候加速
+                        d = (e.max - dist) / e.max,
+                        context.beginPath(),
+                        context.lineWidth = d / 2,
+                        context.strokeStyle = "rgba(" + config.c + "," + (d + 0.2) + ")",
+                        context.moveTo(r.x, r.y),
+                        context.lineTo(e.x, e.y),
+                        context.stroke());
+                }
+            }
+        }), frame_func(draw_canvas);
+    }
+    //创建画布，并添加到body中
+    var the_canvas = document.createElement("canvas"), //画布
+        config = get_config_option(), //配置
+        canvas_id = "c_n" + config.l, //canvas id
+        context = the_canvas.getContext("2d"),
+        canvas_width, canvas_height,
+        frame_func = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(func) {
+            window.setTimeout(func, 1000 / 45);
+        },
+        random = Math.random,
+        current_point = {
+            x: null, //当前鼠标x
+            y: null, //当前鼠标y
+            max: 20000 // 圈半径的平方
+        },
+        all_array;
+    the_canvas.id = canvas_id;
+    the_canvas.style.cssText = "position:fixed;top:0;left:0;z-index:" + config.z + ";opacity:" + config.o;
+    get_by_tagname("body")[0].appendChild(the_canvas);
+
+    //初始化画布大小
+    set_canvas_size();
+    window.onresize = set_canvas_size;
+    //当时鼠标位置存储，离开的时候，释放当前位置信息
+    window.onmousemove = function(e) {
+        e = e || window.event;
+        current_point.x = e.clientX;
+        current_point.y = e.clientY;
+    }, window.onmouseout = function() {
+        current_point.x = null;
+        current_point.y = null;
+    };
+    //随机生成config.n条线位置信息
+    for (var random_points = [], i = 0; config.n > i; i++) {
+        var x = random() * canvas_width, //随机位置
+            y = random() * canvas_height,
+            xa = 2 * random() - 1, //随机运动方向
+            ya = 2 * random() - 1;
+        // 随机点
+        random_points.push({
+            x: x,
+            y: y,
+            xa: xa,
+            ya: ya,
+            max: 6000 //沾附距离
+        });
+    }
+    all_array = random_points.concat([current_point]);
+    //0.1秒后绘制
+    setTimeout(function() {
+        draw_canvas();
+    }, 100);
+}();
+</script>
+
+<nav class="navbar is-primary container" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="/media/images/logo.png" width="112" height="28">
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+           data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+
+            {% block navbar-start %}
+            <a class="navbar-item" href="/">
+                首页
+            </a>
+
+            <!--下拉框-->
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">文章分类</a>
+                <div class="navbar-dropdown">
+                    {% get_category_list as category_list %}
+                    {% for category in category_list %}
+                    <a class="navbar-item" href="{% url 'blogmessage:category_list' category.id %}">{{ category.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <!--获取category.py文件get_category_list返回的结果集，并取别名category_list-->
+            <!--不适用下拉框显示-->
+            <!--                        {% get_category_list as category_list %}-->
+
+            <!--                        {% for category in category_list %}-->
+            <!--                        <a class="navbar-item" href="{% url 'blogmessage:category_list' category.id %}">-->
+            <!--                            {{ category.name }}-->
+            <!--                        </a>-->
+            <!--                        {% endfor %}-->
+            <!--                        {% endblock %}-->
+        </div>
+
+        <div class="navbar-end">
+
+            {% block navbar-end %}
+            <div class="navbar-item">
+                <!--                 user.is_authenticated判断用户是否登录 -->
+                {% if user.is_authenticated %}
+                <div class="buttons">
+                    <a class="button is-primary" href="/user/user_profile">
+                        {% if request.user.userprofile.nike_name %}
+                        <strong> {{ request.user.userprofile.nike_name }}</strong>
+                        {% else %}
+                        <strong> {{ request.user.username }}</strong>
+                        {% endif %}
+                    </a>
+                    <a href="/user/user_exit" class="button is-primary">退出</a>
+                </div>
+                {% else %}
+
+                <div class="buttons">
+                    <a class="button is-light" href="/user/login">
+                        登录
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+</nav>
+<section class="section">
+    <div class=" container">
+        <div class="columns">
+            <div class="column is-8">
+                {% block section %}
+                <!--                 page_obj修改为分页 -->
+                {% if page_obj %}
+                {% for article in page_obj %}
+                <div class="box">
+                    <h1 class="is-size-5 has-text-weight-bold">
+                        <a href="{% url 'blogmessage:article_list' article.id %}"> {{ article.title }}</a>
+                    </h1>
+                    <div class=" is-size-7 has-text-grey-light pt-1 pb-1">
+                        <span class="mr-3">作者：{{ request.user.userprofile.nike_name }}</span> <span>发布日期：{{ article.add_date }}</span>
+                    </div>
+                    <p class="mt-3">文章概述：{{ article.desc|truncatechars:50 }}</p>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="box">
+                    <p class="has-text-danger">文章不存在！</p>
+                </div>
+                {% endif %}
+                <!--  根据官方文档选取分页模板 -->
+                {% if page_obj %}
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    {% if page_obj.has_previous %}  <!--  has_previous判断是否存在上一页 -->
+                    <a class="pagination-previous" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                    <a class="pagination-next" href="?page={{ page_obj.next_page_number }}">Next page</a>
+                    {% endif %}
+                    <ul class="pagination-list">
+                        {% if page_obj.has_previous %}
+                        <li><a class="pagination-link" aria-label="Goto page 45"
+                               href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+                        </li>
+                        {% endif %}
+                        <li><a class="pagination-link is-current" aria-label="Page {{ page_obj.number }}"
+                               aria-current="page" href='?page={{ page_obj.number }}'>{{ page_obj.number }}</a></li>
+                        {% if page_obj.has_next %}
+                        <li><a class="pagination-link" href="?page={{ page_obj.next_page_number }}"
+                               aria-label="Goto page {{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% endblock %}
+            </div>
+            <div class="column is-4">
+
+                {% block right %}
+                {% get_sidebar_list as sidebar_list %}
+
+                {% for sidebar in sidebar_list %}
+                <div class="box">
+                    <h1 class=" is-size-5 title">{{ sidebar.title }}</h1>
+                    <p>{{ sidebar.get_content|safe }}</p>
+                </div>
+
+                {% endfor %}
+
+                {% endblock %}
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% block footer %}
+<footer class="footer container">
+    <div class=" has-text-centered">
+        博客的底部
+    </div>
+</footer>
+{% endblock %}
+
+</body>
+
+</html>

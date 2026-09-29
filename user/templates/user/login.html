@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            /* 设置背景图 */
+            background-image: url('/media/images/user_login.jpeg'); /* 替换为你的图片路径 */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.5); /* 半透明白色背景 */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>用户登录</h2>
+<!--    {#        <form action="/login" method="post">#}-->
+<!--    {#          <input type="text" name="username" placeholder="用户名|邮箱" required>#}-->
+<!--    {#          <input type="password" name="password" placeholder="密码" required>#}-->
+<!--    {#          <button type="submit">登录</button>#}-->
+<!--    {#        </form>#}-->
+    <form action="" method="post">
+        {% csrf_token %}
+<!--        {#        <lable for="id_username">用户名</lable>#}-->
+<!--        {#        <input type="text" name="username" id="id_username">#}-->
+<!--        {#        <lable for="id_password">密码</lable>#}-->
+<!--        {#        <input type="password" name="password" id="id_password">#}-->
+        {{ form.as_p }} <!-- 自动渲染为 <p> 包裹的字段 -->
+        <a href="/user/register" style="float: right;color:red;">注册用户</a>
+        <a href="/user/forget_pwd" style="float: left;color:blue;">忘记密码</a>
+        <button type="submit">登录</button>
+    </form>
+    <!-- 对错误信息进行标红显示-->
+    <style>
+        .errorlist {
+            color: red;
+        }
+    </style>
+</div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{% load category %}
+{% get_new_article as article_list %}
+{% for article in article_list %}
+    <ul>
+        <li><a href="{% url 'blogmessage:article_list' article.id %}">{{ article.title }}</a></li>
+    </ul>
+{% endfor %}

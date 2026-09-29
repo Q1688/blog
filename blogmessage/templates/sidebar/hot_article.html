@@ -1,0 +1,7 @@
+{% load category %}
+{% get_hot_pv_article as pv_article %}
+{% for article in pv_article %}
+    <ul>
+        <li><a href="{% url 'blogmessage:article_list' article.id %}">{{ article.title }}</a></li>
+    </ul>
+{% endfor %}

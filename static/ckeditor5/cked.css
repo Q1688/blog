@@ -1,0 +1,19 @@
+.aligned label {
+    display: block;
+    padding: 4px 0px 0 0;
+    min-width: 100px;
+    width: 110px;
+    word-wrap: break-word;
+    line-height: 1;
+}
+.ck.ck-reset.ck-editor.ck-rounded-corners {
+    width: 100%; /* 或者任何你想要的宽度 */
+}
+
+.ck.ck-dropdown.ck-heading-dropdown{
+    width: 5%;
+}
+.ck-content{
+    height: 40em;
+    width: 99%;
+}
