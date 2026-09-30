@@ -1,2 +1,2 @@
-# Day_Projects
-日常项目
+# blog
+博客python-->Django
